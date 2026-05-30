@@ -1,5 +1,7 @@
 # Muse Cam AI
 
+<p align="center"><img src="assets/images/appIcon.png" alt="Muse Cam AI" width="120"/></p>
+
 AI-powered camera assistant for real-time capture guidance and automated, professional-quality photos.
 
 ---
