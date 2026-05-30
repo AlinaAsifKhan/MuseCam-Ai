@@ -1,0 +1,65 @@
+name: muse_cam_ai
+description: "A new Flutter project."
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Fonts
+  google_fonts: ^6.1.0
+
+  # Icons
+  phosphor_flutter: ^2.0.1
+
+
+  # Video
+  video_player: ^2.7.2
+
+  # State Management
+  riverpod: ^2.5.1
+  flutter_riverpod: ^2.5.1
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # Camera & Media
+  camera: ^0.10.5
+  image: ^4.1.7
+  photo_view: ^0.14.0
+  
+  # ML Kit for on-device ML detection
+  google_mlkit_face_detection: ^0.10.0
+  google_mlkit_pose_detection: ^0.12.0
+
+  # Storage
+  hive_flutter: ^1.1.0
+
+  # Utilities
+  cupertino_icons: ^1.0.8
+  permission_handler: ^11.3.0
+  path_provider: ^2.1.0
+  flutter_haptic_feedback: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # App Icon Generator
+  flutter_launcher_icons: ^0.13.1
+
+  flutter_lints: ^6.0.0
+
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/fonts/
