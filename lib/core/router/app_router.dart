@@ -4,6 +4,7 @@ import '../../features/camera/presentation/providers/mode_provider.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/home/screens/home_screen.dart';
+import '../../features/gallery/screens/gallery_screen.dart';
 
 /// App Router Configuration
 /// Defines all routes for MuseCam AI
@@ -73,8 +74,7 @@ class AppRouter {
           path: gallery,
           name: 'gallery',
           builder: (context, state) {
-            // TODO: Import and add GalleryScreen
-            return const SizedBox();
+            return const GalleryScreen();
           },
         ),
         // Profile Screen

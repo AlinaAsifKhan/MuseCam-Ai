@@ -5,6 +5,8 @@ import 'package:muse_cam_ai/core/constants/spacing.dart';
 import 'package:muse_cam_ai/core/theme/colors.dart';
 import 'package:muse_cam_ai/core/theme/typography.dart';
 import 'package:muse_cam_ai/features/camera/presentation/providers/mode_provider.dart';
+import 'package:muse_cam_ai/features/gallery/providers/photo_list_provider.dart';
+import 'dart:io';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -129,21 +131,56 @@ class HomeScreen extends ConsumerWidget {
                   child: _SectionTitle(
                     title: 'Recent Captures',
                     subtitle: 'Your latest results will appear here.',
+                    actionLabel: 'See All',
+                    onAction: () => context.go('/gallery'),
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: MuseSpacing.lg),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _RecentCaptureTile(index: index),
-                    childCount: 6,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: MuseSpacing.md,
-                    crossAxisSpacing: MuseSpacing.md,
-                    mainAxisExtent: 120,
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: MuseSpacing.lg),
+                  child: SizedBox(
+                    height: 140,
+                    child: Consumer(builder: (context, ref, _) {
+                      final photosAsync = ref.watch(photoListProvider);
+                      return photosAsync.when(
+                        data: (files) {
+                          if (files.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No captures yet',
+                                style: MuseTypography.bodySm.copyWith(
+                                  color: MuseColors.textSecondary,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: files.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: MuseSpacing.md),
+                            itemBuilder: (context, index) {
+                              final file = files[index];
+                              return GestureDetector(
+                                onTap: () => context.go('/gallery'),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(MuseSpacing.radiusMd),
+                                  child: Image.file(
+                                    File(file.path),
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (_, __) => Center(child: Text('Failed to load captures')),
+                      );
+                    }),
                   ),
                 ),
               ),
@@ -195,10 +232,14 @@ class HomeScreen extends ConsumerWidget {
 class _SectionTitle extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const _SectionTitle({
     required this.title,
     required this.subtitle,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
@@ -206,12 +247,28 @@ class _SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: MuseTypography.displaySm.copyWith(
-            color: Colors.white,
-            fontSize: 22,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: MuseTypography.displaySm.copyWith(
+                color: Colors.white,
+                fontSize: 22,
+              ),
+            ),
+            if (actionLabel != null && onAction != null)
+              TextButton(
+                onPressed: onAction,
+                child: Text(
+                  actionLabel!,
+                  style: MuseTypography.labelLg.copyWith(
+                    color: MuseColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         Text(

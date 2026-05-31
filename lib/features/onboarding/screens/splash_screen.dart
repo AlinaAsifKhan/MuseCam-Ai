@@ -7,7 +7,7 @@ import '../../../shared/widgets/muse_gradient_button.dart';
 import '../../../shared/widgets/video_background.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -125,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
                             MuseGradientButton(
                               label: 'Start Capturing',
                               onPressed: () {
-                                context.go('/camera');
+                                context.go('/home');
                               },
                               showShimmer: true,
                             ),
@@ -155,7 +155,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 Container(
                                   width: 1,
                                   height: 20,
-                                  color: MuseColors.textSecondary.withOpacity(0.3),
+                                  color: MuseColors.textSecondary.withValues(alpha: 0.3),
                                 ),
 
                                 const SizedBox(width: MuseSpacing.md),
