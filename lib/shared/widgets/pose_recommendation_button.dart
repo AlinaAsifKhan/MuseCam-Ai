@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:muse_cam_ai/core/theme/colors.dart';
-import 'package:muse_cam_ai/core/constants/spacing.dart';
 import '../../features/pose_detection/presentation/providers/pose_recommendation_provider.dart';
 import 'pose_recommendation_drawer.dart';
 
@@ -36,8 +35,8 @@ class PoseRecommendationButton extends ConsumerWidget {
                   ? MuseColors.success
                   : MuseColors.primary,
               selectedPose != null
-                  ? MuseColors.success.withOpacity(0.7)
-                  : MuseColors.dustyRose.withOpacity(0.7),
+                  ? MuseColors.success.withValues(alpha: 0.7)
+                  : MuseColors.dustyRose.withValues(alpha: 0.7),
             ],
           ),
           boxShadow: [
@@ -45,7 +44,7 @@ class PoseRecommendationButton extends ConsumerWidget {
               color: (selectedPose != null
                       ? MuseColors.success
                       : MuseColors.primary)
-                  .withOpacity(0.4),
+                  .withValues(alpha: 0.4),
               blurRadius: 16,
               spreadRadius: 2,
             ),

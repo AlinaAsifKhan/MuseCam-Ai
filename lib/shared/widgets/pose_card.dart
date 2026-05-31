@@ -3,6 +3,7 @@ import '../../features/pose_detection/domain/entities/pose_suggestion.dart';
 import 'package:muse_cam_ai/core/theme/colors.dart';
 import 'package:muse_cam_ai/core/theme/typography.dart';
 import 'package:muse_cam_ai/core/constants/spacing.dart';
+import 'pose_illustration.dart';
 
 /// Card widget for a single pose suggestion
 class PoseCard extends StatelessWidget {
@@ -34,16 +35,16 @@ class PoseCard extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? MuseColors.primary
-                : MuseColors.textSecondary.withOpacity(0.3),
+                : MuseColors.textSecondary.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
           color: isSelected
-              ? MuseColors.primary.withOpacity(0.1)
+              ? MuseColors.primary.withValues(alpha: 0.1)
               : MuseColors.surface,
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: MuseColors.primary.withOpacity(0.3),
+                      color: MuseColors.primary.withValues(alpha: 0.3),
                       blurRadius: 12,
                       spreadRadius: 2,
                     ),
@@ -53,18 +54,27 @@ class PoseCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Pose icon (placeholder)
+            // Pose preview illustration
             Container(
-              width: 60,
-              height: 60,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: MuseColors.card,
+                color: isSelected
+                    ? MuseColors.primary.withValues(alpha: 0.08)
+                    : MuseColors.card,
+                border: Border.all(
+                  color: isSelected
+                      ? MuseColors.primary.withValues(alpha: 0.4)
+                      : MuseColors.textSecondary.withValues(alpha: 0.08),
+                ),
               ),
-              child: Icon(
-                Icons.person,
-                size: 32,
-                color: isSelected ? MuseColors.primary : MuseColors.textSecondary,
+              padding: const EdgeInsets.all(8),
+              child: PoseIllustration(
+                poseId: pose.id,
+                isSelected: isSelected,
+                dashed: false,
+                strokeWidth: 1.8,
               ),
             ),
 
@@ -87,7 +97,7 @@ class PoseCard extends StatelessWidget {
               pose.description,
               style: TextStyle(
                 fontSize: 10,
-                color: MuseColors.textSecondary.withOpacity(0.7),
+                color: MuseColors.textSecondary.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

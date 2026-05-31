@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/camera/presentation/providers/mode_provider.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
+import '../../features/home/screens/home_screen.dart';
 
 /// App Router Configuration
 /// Defines all routes for MuseCam AI
@@ -41,8 +43,7 @@ class AppRouter {
           path: home,
           name: 'home',
           builder: (context, state) {
-            // TODO: Import and add HomeScreen
-            return const SizedBox();
+            return const HomeScreen();
           },
         ),
         // Camera Screen
@@ -50,7 +51,12 @@ class AppRouter {
           path: camera,
           name: 'camera',
           builder: (context, state) {
-            return const CameraScreen();
+            final modeName = state.uri.queryParameters['mode'];
+            final initialMode = CaptureMode.values.firstWhere(
+              (mode) => mode.name == modeName,
+              orElse: () => CaptureMode.portrait,
+            );
+            return CameraScreen(initialMode: initialMode);
           },
         ),
         // Edit Screen

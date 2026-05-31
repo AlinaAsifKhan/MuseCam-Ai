@@ -10,6 +10,7 @@ import '../widgets/camera_preview_widget.dart';
 import '../widgets/permission_request_widget.dart';
 import '../widgets/camera_controls_widget.dart';
 import 'package:muse_cam_ai/features/face_detection/presentation/providers/face_detection_provider.dart';
+import 'package:muse_cam_ai/features/camera/presentation/providers/mode_provider.dart';
 import 'package:muse_cam_ai/features/pose_detection/presentation/providers/pose_recommendation_provider.dart';
 import 'package:muse_cam_ai/shared/widgets/grid_guide_overlay.dart';
 import 'package:muse_cam_ai/shared/widgets/hud_overlay.dart';
@@ -17,6 +18,8 @@ import 'package:muse_cam_ai/shared/widgets/bounding_box_overlay.dart';
 import 'package:muse_cam_ai/shared/widgets/capture_button.dart';
 import 'package:muse_cam_ai/shared/widgets/capture_flash_overlay.dart';
 import 'package:muse_cam_ai/shared/widgets/mode_indicator_badge.dart';
+import 'package:muse_cam_ai/shared/widgets/pose_recommendation_button.dart';
+import 'package:muse_cam_ai/shared/widgets/target_pose_overlay.dart';
 
 /// Main camera screen
 ///
@@ -26,7 +29,9 @@ import 'package:muse_cam_ai/shared/widgets/mode_indicator_badge.dart';
 /// - Live preview display
 /// - Controls (switch camera, take picture)
 class CameraScreen extends ConsumerStatefulWidget {
-  const CameraScreen({super.key});
+  final CaptureMode initialMode;
+
+  const CameraScreen({super.key, required this.initialMode});
 
   @override
   ConsumerState<CameraScreen> createState() => _CameraScreenState();
@@ -43,7 +48,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     // Initialize camera when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = ref.read(cameraStateProvider.notifier);
-      notifier.initialize();
+      ref.read(modeProvider.notifier).selectMode(widget.initialMode);
+      notifier.initialize(
+        lensDirection: preferredLensForMode(widget.initialMode),
+      );
       _startFrameProcessing();
     });
 
@@ -89,6 +97,18 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraStateProvider);
+
+    ref.listen<CaptureMode>(modeProvider, (previous, next) {
+      final currentCameraState = ref.read(cameraStateProvider);
+      if (currentCameraState.status != CameraStatus.initialized) {
+        return;
+      }
+
+      final targetLens = preferredLensForMode(next);
+      if (currentCameraState.currentLens != targetLens) {
+        ref.read(cameraStateProvider.notifier).switchLens(targetLens);
+      }
+    });
 
     return Scaffold(
       body: switch (cameraState.status) {
@@ -148,21 +168,22 @@ class _CameraContent extends ConsumerWidget {
         ),
 
         // Bounding box overlay with detected faces
-        Positioned.fill(
-          child: IgnorePointer(
-            child: AnimatedBuilder(
-              animation: pulseAnimation,
-              builder: (context, child) {
-                return BoundingBoxOverlay(
-                  detectedFaces: detectedFaces,
-                  screenSize: screenSize,
-                  showConfidence: true,
-                  animationValue: pulseAnimation.value,
-                );
-              },
+        if (!poseState.showTargetPose)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: AnimatedBuilder(
+                animation: pulseAnimation,
+                builder: (context, child) {
+                  return BoundingBoxOverlay(
+                    detectedFaces: detectedFaces,
+                    screenSize: screenSize,
+                    showConfidence: true,
+                    animationValue: pulseAnimation.value,
+                  );
+                },
+              ),
             ),
           ),
-        ),
 
         // Mode indicator badge (top center)
         Positioned(
@@ -176,9 +197,9 @@ class _CameraContent extends ConsumerWidget {
           ),
         ),
 
-        // HUD overlay with indicators (positioned at top-right area)
+        // HUD overlay with indicators, moved below the mode badge to avoid overlap
         Positioned(
-          top: 16,
+          top: 72,
           right: 16,
           left: 16,
           child: IgnorePointer(
@@ -196,20 +217,20 @@ class _CameraContent extends ConsumerWidget {
           child: CaptureFlashOverlay(flashTrigger: captureState.flashTrigger),
         ),
 
-        // Target pose overlay (dashed frame showing target)
-        // TEMPORARILY DISABLED - causing black screen
-        // TargetPoseOverlay(
-        //   targetPose: poseState.selectedPose,
-        //   show: poseState.showTargetPose,
-        // ),
+        // Target pose overlay (dashed silhouette showing target)
+        Positioned.fill(
+          child: TargetPoseOverlay(
+            targetPose: poseState.selectedPose,
+            show: poseState.showTargetPose,
+          ),
+        ),
 
         // Pose recommendation button (top-right)
-        // TEMPORARILY DISABLED - testing if this causes black screen
-        // Positioned(
-        //   top: 16,
-        //   right: 16,
-        //   child: const PoseRecommendationButton(),
-        // ),
+        Positioned(
+          top: 16,
+          right: 16,
+          child: const PoseRecommendationButton(),
+        ),
 
         // Capture button (center-bottom)
         Positioned(
@@ -222,7 +243,8 @@ class _CameraContent extends ConsumerWidget {
                 final notifier = ref.read(captureProvider.notifier);
                 notifier.capturePhoto();
               },
-              isEnabled: !captureState.isCapturing,
+              isEnabled:
+                  !captureState.isCapturing && cameraState.status == CameraStatus.initialized,
               qualityScore: 0.8, // Demo quality (can be connected to real detection later)
               size: 80,
             ),

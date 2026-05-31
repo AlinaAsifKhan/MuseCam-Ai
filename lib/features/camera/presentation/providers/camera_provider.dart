@@ -111,12 +111,21 @@ class CameraStateNotifier extends StateNotifier<CameraState> {
   /// Switch camera lens
   Future<void> switchLens(CameraLensDirection lensDirection) async {
     try {
+      state = state.copyWith(
+        status: CameraStatus.initializing,
+        errorMessage: null,
+      );
       await _repository.switchCameraLens(lensDirection);
-      state = state.copyWith(currentLens: lensDirection);
+      state = state.copyWith(
+        status: CameraStatus.initialized,
+        currentLens: lensDirection,
+        errorMessage: null,
+      );
       developer.log('Switched to lens: $lensDirection');
     } catch (e) {
       developer.log('Error switching lens: $e', error: e);
       state = state.copyWith(
+        status: CameraStatus.failed,
         errorMessage: 'Failed to switch camera: $e',
       );
     }

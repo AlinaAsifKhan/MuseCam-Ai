@@ -1,5 +1,6 @@
 # Miscellaneous
 
+GIT_WORKFLOW.md
 *.class
 *.log
 *.pyc
@@ -37,6 +38,7 @@ migrate_working_dir/
 # Build outputs
 
 /build/
+/android/build/
 /coverage/
 
 /android/app/debug

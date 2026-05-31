@@ -3,7 +3,7 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
 class MuseCamAI extends StatelessWidget {
-  const MuseCamAI({Key? key}) : super(key: key);
+  const MuseCamAI({super.key});
 
   @override
   Widget build(BuildContext context) {

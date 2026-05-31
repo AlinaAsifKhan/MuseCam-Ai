@@ -17,13 +17,13 @@ class SettingsMenu extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.all(MuseSpacing.lg),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.85),
+        color: Colors.black.withValues(alpha: 0.85),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(MuseSpacing.radiusLg),
         ),
         border: Border(
           top: BorderSide(
-            color: MuseColors.mutedGold.withOpacity(0.2),
+            color: MuseColors.mutedGold.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -52,7 +52,7 @@ class SettingsMenu extends ConsumerWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: MuseColors.textSecondary.withOpacity(0.1),
+                      color: MuseColors.textSecondary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -88,13 +88,13 @@ class SettingsMenu extends ConsumerWidget {
                   padding: EdgeInsets.all(MuseSpacing.md),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? MuseColors.primary.withOpacity(0.15)
+                        ? MuseColors.primary.withValues(alpha: 0.15)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(MuseSpacing.radiusMd),
                     border: Border.all(
                       color: isSelected
-                          ? MuseColors.mutedGold.withOpacity(0.6)
-                          : MuseColors.textSecondary.withOpacity(0.1),
+                          ? MuseColors.mutedGold.withValues(alpha: 0.6)
+                          : MuseColors.textSecondary.withValues(alpha: 0.1),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -106,8 +106,8 @@ class SettingsMenu extends ConsumerWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? MuseColors.mutedGold.withOpacity(0.2)
-                              : MuseColors.textSecondary.withOpacity(0.05),
+                              ? MuseColors.mutedGold.withValues(alpha: 0.2)
+                              : MuseColors.textSecondary.withValues(alpha: 0.05),
                           borderRadius:
                               BorderRadius.circular(MuseSpacing.radiusSm),
                         ),
@@ -140,8 +140,7 @@ class SettingsMenu extends ConsumerWidget {
                             Text(
                               mode.description,
                               style: MuseTypography.labelSm.copyWith(
-                                color: MuseColors.textSecondary
-                                    .withOpacity(0.7),
+                                color: MuseColors.textSecondary.withValues(alpha: 0.7),
                                 fontSize: 12,
                               ),
                             ),
@@ -172,7 +171,7 @@ class SettingsMenu extends ConsumerWidget {
                           height: 24,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: MuseColors.textSecondary.withOpacity(0.2),
+                              color: MuseColors.textSecondary.withValues(alpha: 0.2),
                               width: 1.5,
                             ),
                             shape: BoxShape.circle,
@@ -191,10 +190,10 @@ class SettingsMenu extends ConsumerWidget {
           Container(
             padding: EdgeInsets.all(MuseSpacing.md),
             decoration: BoxDecoration(
-              color: MuseColors.mutedGold.withOpacity(0.08),
+              color: MuseColors.mutedGold.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(MuseSpacing.radiusSm),
               border: Border.all(
-                color: MuseColors.mutedGold.withOpacity(0.15),
+                color: MuseColors.mutedGold.withValues(alpha: 0.15),
                 width: 1,
               ),
             ),
@@ -210,7 +209,7 @@ class SettingsMenu extends ConsumerWidget {
                   child: Text(
                     'Selected mode will affect camera overlays and guidance',
                     style: MuseTypography.labelSm.copyWith(
-                      color: MuseColors.textSecondary.withOpacity(0.8),
+                      color: MuseColors.textSecondary.withValues(alpha: 0.8),
                       fontSize: 11,
                     ),
                   ),

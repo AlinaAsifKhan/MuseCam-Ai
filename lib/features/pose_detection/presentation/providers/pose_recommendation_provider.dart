@@ -31,6 +31,7 @@ class PoseRecommendationNotifier extends StateNotifier<PoseRecommendationState> 
   void selectPose(PoseSuggestion pose) {
     developer.log('Selected pose: ${pose.name}', name: 'PoseRecommendationNotifier');
     state = state.copyWith(selectedPose: pose);
+    state = state.copyWith(showTargetPose: true);
   }
 
   /// Toggle target pose display

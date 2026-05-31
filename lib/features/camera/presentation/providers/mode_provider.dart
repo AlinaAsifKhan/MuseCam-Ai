@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:camera/camera.dart';
 
 /// Available capture modes
 enum CaptureMode {
@@ -11,6 +12,18 @@ enum CaptureMode {
   final String description;
 
   const CaptureMode(this.displayName, this.description);
+}
+
+/// Preferred camera lens for a capture mode.
+CameraLensDirection preferredLensForMode(CaptureMode mode) {
+  switch (mode) {
+    case CaptureMode.selfie:
+      return CameraLensDirection.front;
+    case CaptureMode.portrait:
+    case CaptureMode.product:
+    case CaptureMode.creative:
+      return CameraLensDirection.back;
+  }
 }
 
 /// State notifier for managing the current capture mode

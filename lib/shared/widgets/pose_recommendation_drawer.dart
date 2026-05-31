@@ -15,83 +15,89 @@ class PoseRecommendationDrawer extends ConsumerWidget {
     final state = ref.watch(poseRecommendationProvider);
     final availablePoses = ref.watch(availablePosesProvider);
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.35,
-      minChildSize: 0.25,
-      maxChildSize: 0.6,
-      expand: false,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: MuseColors.surface,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(MuseSpacing.radiusLg),
-              topRight: Radius.circular(MuseSpacing.radiusLg),
-            ),
-            boxShadow: [MuseColors.cardShadow],
+    return FractionallySizedBox(
+      heightFactor: 0.92,
+      child: Container(
+        decoration: BoxDecoration(
+          color: MuseColors.surface,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(MuseSpacing.radiusLg),
+            topRight: Radius.circular(MuseSpacing.radiusLg),
           ),
-          child: CustomScrollView(
-            controller: scrollController,
-            slivers: [
-              // Header
-              SliverAppBar(
-                pinned: true,
-                elevation: 0,
-                backgroundColor: MuseColors.surface,
-                automaticallyImplyLeading: false,
-                title: Text(
-                  'Pose Suggestions',
-                  style: MuseTypography.bodyLg.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+          boxShadow: [MuseColors.cardShadow],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  MuseSpacing.lg,
+                  MuseSpacing.lg,
+                  MuseSpacing.lg,
+                  MuseSpacing.md,
                 ),
-                centerTitle: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Pose Suggestions',
+                      style: MuseTypography.bodyLg.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
               ),
-
-              // Poses list (horizontal scroll)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: MuseSpacing.lg,
-                    vertical: MuseSpacing.md,
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: availablePoses
-                          .map(
-                            (pose) => PoseCard(
-                              pose: pose,
-                              isSelected: state.selectedPose?.id == pose.id,
-                              onTap: () {
-                                ref
-                                    .read(poseRecommendationProvider.notifier)
-                                    .selectPose(pose);
-                              },
-                            ),
-                          )
-                          .toList(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: MuseSpacing.lg,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Pick a pose and preview its silhouette',
+                    style: MuseTypography.bodySm.copyWith(
+                      color: MuseColors.textSecondary,
                     ),
                   ),
                 ),
               ),
-
-              // Guidance points for selected pose
-              if (state.selectedPose != null) ...[
-                SliverToBoxAdapter(
-                  child: Divider(
-                    color: MuseColors.textSecondary.withOpacity(0.2),
-                    height: MuseSpacing.lg,
-                  ),
+              const SizedBox(height: MuseSpacing.md),
+              SizedBox(
+                height: 168,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: MuseSpacing.lg),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final pose = availablePoses[index];
+                    return PoseCard(
+                      pose: pose,
+                      isSelected: state.selectedPose?.id == pose.id,
+                      onTap: () {
+                        ref
+                            .read(poseRecommendationProvider.notifier)
+                            .selectPose(pose);
+                      },
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: MuseSpacing.md),
+                  itemCount: availablePoses.length,
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: MuseSpacing.lg,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+              ),
+              const SizedBox(height: MuseSpacing.md),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: MuseSpacing.lg),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (state.selectedPose != null) ...[
                         Text(
                           'Guidance',
                           style: MuseTypography.labelLg.copyWith(
@@ -99,112 +105,98 @@ class PoseRecommendationDrawer extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: MuseSpacing.sm),
-                        ...state.selectedPose!.guidancePoints
-                            .map(
-                              (point) => Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: MuseSpacing.sm,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 6,
-                                      height: 6,
-                                      margin: const EdgeInsets.only(
-                                        right: MuseSpacing.md,
-                                        top: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: MuseColors.primary,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        point,
-                                        style: MuseTypography.bodySm,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-
-              // Apply button
-              if (state.selectedPose != null)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(MuseSpacing.lg),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Apply pose (show target overlay)
-                        ref
-                            .read(poseRecommendationProvider.notifier)
-                            .applyPose(state.selectedPose!);
-
-                        // Close drawer
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: MuseSpacing.md,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              MuseColors.primary,
-                              MuseColors.dustyRose,
-                            ],
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(MuseSpacing.radiusMd),
-                          boxShadow: [
-                            BoxShadow(
-                              color: MuseColors.primary.withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                        ...state.selectedPose!.guidancePoints.map(
+                          (point) => Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: MuseSpacing.sm,
                             ),
-                          ],
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  margin: const EdgeInsets.only(
+                                    right: MuseSpacing.md,
+                                    top: 6,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: MuseColors.primary,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    point,
+                                    style: MuseTypography.bodySm,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Center(
+                      ] else
+                        Padding(
+                          padding: const EdgeInsets.only(top: MuseSpacing.lg),
                           child: Text(
-                            'Apply Pose',
-                            style: MuseTypography.labelLg.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                            'Select a pose to get started',
+                            style: MuseTypography.bodySm.copyWith(
+                              color: MuseColors.textSecondary,
+                              fontStyle: FontStyle.italic,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-                )
-              else
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(MuseSpacing.lg),
-                    child: Text(
-                      'Select a pose to get started',
-                      style: MuseTypography.bodySm.copyWith(
-                        color: MuseColors.textSecondary,
-                        fontStyle: FontStyle.italic,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  MuseSpacing.lg,
+                  MuseSpacing.md,
+                  MuseSpacing.lg,
+                  MuseSpacing.lg,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: state.selectedPose == null
+                        ? null
+                        : () {
+                            ref
+                                .read(poseRecommendationProvider.notifier)
+                                .applyPose(state.selectedPose!);
+                            Navigator.pop(context);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: MuseSpacing.md,
                       ),
-                      textAlign: TextAlign.center,
+                      backgroundColor: MuseColors.primary,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor:
+                          MuseColors.textSecondary.withValues(alpha: 0.2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(MuseSpacing.radiusMd),
+                      ),
+                      elevation: 6,
+                    ),
+                    child: Text(
+                      'Apply Pose',
+                      style: MuseTypography.labelLg.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
+              ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
